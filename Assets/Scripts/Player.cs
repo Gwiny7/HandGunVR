@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public enum HandPose { None, Gun, Spidey, Fist, Paper, Point}
 
@@ -38,7 +35,6 @@ public class Player : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         //lineRenderer.SetPosition(0, transform.position);
         startPos = aim.transform.position;
-        handPose = HandPose.None;
     }
 
     // Update is called once per frame
@@ -75,7 +71,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
             TryShoot();
-
+        
         if (Input.GetKeyDown(KeyCode.R))
             Reload();
 
@@ -97,21 +93,23 @@ public class Player : MonoBehaviour
     void Shoot()
     {
         bulletCount--;
-        if (Physics.SphereCast(transform.position, aimAssistSize, (aim.transform.position - transform.position).normalized, out RaycastHit raycastHit, maxRange))
+        if (Physics.SphereCast(aimOrigin.position, aimAssistSize, (aimTarget.position - aimOrigin.position).normalized, out RaycastHit raycastHit, maxRange))
         {
             if(raycastHit.collider.gameObject.GetComponent<Target>())
             {                    
                 raycastHit.collider.gameObject.GetComponent<Target>().handleHit(handPose);
             }
-            else if (Physics.SphereCast(transform.position, aimAssistSize * 2, (aim.transform.position - transform.position).normalized, out RaycastHit raycastHit2, maxRange))
-            {
-                if(raycastHit2.collider.gameObject.GetComponent<Target>())
-                { 
-                    raycastHit2.collider.gameObject.GetComponent<Target>().handleHit(handPose);
-                }
+        }
+        else if (Physics.SphereCast(transform.position, aimAssistSize * 2, (aim.transform.position - transform.position).normalized, out RaycastHit raycastHit2, maxRange))
+        {
+            if(raycastHit2.collider.gameObject.GetComponent<Target>())
+            { 
+                raycastHit2.collider.gameObject.GetComponent<Target>().handleHit(handPose);
             }
-            else
-                GameManager.Instance.TargetMissed();
+        }
+        else
+        {
+           GameManager.Instance.TargetMissed(); 
         }
     }
 
@@ -120,10 +118,14 @@ public class Player : MonoBehaviour
         if(bulletCount > 0) Shoot();
         else
         {
-
+            //TryShoot();
         }
     }
     
+    public void OnTriggerInput()
+    {
+        TryShoot();
+    }
 
     // void Trigger()
     // {
