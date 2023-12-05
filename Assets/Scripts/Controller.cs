@@ -17,10 +17,11 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     protected void Start() {
         handPose = HandPose.None;
+        //handPose = HandPose.Gun;
     }
     protected void Update()
     {
-        //setHandFingers();
+        setHandFingers();
         UpdateHandPose();
         setPlayerHandPose();
     }
